@@ -4,7 +4,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import csv
+import requests
 
+##URL DEFINITION##
+csv_file_path = "dummy_urls.csv"
+urls = []
+with open(csv_file_path, mode='r') as file:
+    reader = csv.reader(file)
+    next(reader)  # Melewati header
+    for row in reader:
+        urls.append(row[0])
+
+##LOGIN FUNCTION##
 # Data login
 username = "aliefyan.hidayah@student.poltekssn.ac.id"
 password = "JarKom20*"
