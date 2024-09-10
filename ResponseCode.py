@@ -24,10 +24,19 @@ with open(csv_file_path, mode='r') as file:
     for row in reader:
         urls.append(row[0])
 
-# Mengecek status code dari setiap URL
-for url in urls:
-    status_code = check_url_status(url)
-    if status_code:
-        print(f"URL: {url} - Status Code: {status_code}")
-    else:
-        print(f"URL: {url} - Gagal mendapatkan status code.")
+# Menyimpan hasil ke dalam CSV baru
+output_file_path = "scan_results.csv"
+
+with open(output_file_path, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Domain", "Status Code"])  # Menulis header CSV
+    
+    # Mengecek status code dari setiap URL dan menyimpan hasilnya
+    for url in urls:
+        status_code = check_url_status(url)
+        if status_code:
+            writer.writerow([url, status_code])
+        else:
+            print(f"URL: {url} - Gagal mendapatkan status code.")
+
+print(f"Hasil pemindaian telah disimpan ke {output_file_path}")
