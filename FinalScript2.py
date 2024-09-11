@@ -19,7 +19,7 @@ def check_url_status(url):
 def download_website_content(url):
     try:
         # Menggunakan wget untuk mendownload halaman web ke file temp.html
-        wget_command = ["wget", "-q", "-O", "temp.html", url]
+        wget_command = ["wget", "-O", "temp.html", url]
         subprocess.run(wget_command, check=True)
         print(f"Konten dari {url} berhasil diunduh.")
     except subprocess.CalledProcessError as e:
@@ -28,7 +28,6 @@ def download_website_content(url):
 # Fungsi untuk memfilter konten berdasarkan wordlist judi online
 def filter_content_with_grep():
     # Wordlist kata kunci yang berhubungan dengan situs judi online
-    # gambling_keywords = ['zeus', 'bet', 'poker', 'slot', 'gamble', 'jackpot', 'sportsbook']
     a = open('wordlist.txt', 'r')
     b = a.readlines()
 
@@ -50,19 +49,14 @@ def filter_content_with_grep():
 
     return False  # Tidak ada kata kunci yang ditemukan
 
-# Baca URL dari file CSV yang telah dibuat sebelumnya
-csv_file_path = "dummy_urls.csv"
-
+csv_file_path = "judel.csv"
+# Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
 urls = []
 with open(csv_file_path, mode='r') as file:
-   reader = csv.reader(file)
-   next(reader)  # Melewati header
-   for row in reader:
-       urls.append(row[0])
-# with open("dummy_urls.csv") as f:
-#     for row in f:
-#         urls.append(row.split()[0])
-# print(urls)
+    reader = csv.reader(file, delimiter=';')  # Menentukan pemisah sebagai semicolon
+    next(reader)  # Melewati header jika ada
+    for row in reader:
+        urls.append(row[0])  # Mengambil nilai dari kolom pertama
 
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
@@ -75,14 +69,13 @@ with open(output_file_path, mode='w', newline='') as file:
     for url in urls:
         status_code = check_url_status(url)
         if status_code:
-            writer.writerow([url, status_code])
-            
             if status_code == 200:  # Jika status code 200, coba download konten dan cek
                 download_website_content(url)
                 has_gambling_content = filter_content_with_grep()
                 
                 # Tambahkan hasil deteksi ke file CSV
                 writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
+                continue
             else:
                 writer.writerow([url, status_code, "Skipped"])
         else:
