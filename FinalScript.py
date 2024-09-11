@@ -28,7 +28,6 @@ def download_website_content(url):
 # Fungsi untuk memfilter konten berdasarkan wordlist judi online
 def filter_content_with_grep():
     # Wordlist kata kunci yang berhubungan dengan situs judi online
-    # gambling_keywords = ['zeus', 'bet', 'poker', 'slot', 'gamble', 'jackpot', 'sportsbook']
     a = open('wordlist.txt', 'r')
     b = a.readlines()
 
@@ -50,15 +49,19 @@ def filter_content_with_grep():
 
     return False  # Tidak ada kata kunci yang ditemukan
 
-# Baca URL dari file CSV yang telah dibuat sebelumnya
-csv_file_path = "dummy_urls.csv"
+# Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
+csv_file_path = "judel.csv"
 
 urls = []
 with open(csv_file_path, mode='r') as file:
-    reader = csv.reader(file)
-    next(reader)  # Melewati header
+    reader = csv.reader(file, delimiter=';')  # Menentukan pemisah sebagai semicolon
+    next(reader)  # Melewati header jika ada
     for row in reader:
-        urls.append(row[0])
+        # Menambahkan https:// di depan URL
+        urls.append(f"https://{row[0]}")
+        urls.append(f"http://{row[0]}")
+
+print(urls)
 
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
@@ -71,14 +74,13 @@ with open(output_file_path, mode='w', newline='') as file:
     for url in urls:
         status_code = check_url_status(url)
         if status_code:
-            writer.writerow([url, status_code])
-            
             if status_code == 200:  # Jika status code 200, coba download konten dan cek
                 download_website_content(url)
                 has_gambling_content = filter_content_with_grep()
                 
                 # Tambahkan hasil deteksi ke file CSV
                 writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
+                continue
             else:
                 writer.writerow([url, status_code, "Skipped"])
         else:

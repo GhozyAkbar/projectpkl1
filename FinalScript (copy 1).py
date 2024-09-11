@@ -83,6 +83,7 @@ with open(output_file_path, mode='w', newline='') as file:
                 
                 # Tambahkan hasil deteksi ke file CSV
                 writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
+                continue
             else:
                 writer.writerow([url, status_code, "Skipped"])
         else:
