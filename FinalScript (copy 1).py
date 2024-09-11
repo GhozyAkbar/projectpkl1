@@ -54,11 +54,15 @@ def filter_content_with_grep():
 csv_file_path = "dummy_urls.csv"
 
 urls = []
-with open(csv_file_path, mode='r') as file:
-    reader = csv.reader(file)
-    next(reader)  # Melewati header
-    for row in reader:
-        urls.append(row[0])
+#with open(csv_file_path, mode='r') as file:
+#    reader = csv.reader(file)
+#    next(reader)  # Melewati header
+#    for row in reader:
+#        urls.append(row[0])
+with open("dummy_urls.csv") as f:
+    for row in f:
+        urls.append(row.split()[0])
+print(urls)
 
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
