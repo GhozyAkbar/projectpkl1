@@ -1,6 +1,7 @@
 import csv
 import requests
 import subprocess
+import os
 
 # Fungsi untuk mengecek response code suatu URL
 def check_url_status(url):
@@ -70,12 +71,12 @@ with open(output_file_path, mode='w', newline='') as file:
         status_code = check_url_status(url)
         if status_code:
             if status_code == 200:  # Jika status code 200, coba download konten dan cek
-                download_website_content(url)
-                has_gambling_content = filter_content_with_grep()
-                
-                # Tambahkan hasil deteksi ke file CSV
-                writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
-                continue
+                if os.path.getsize('temp.html') < 50000:
+                    download_website_content(url)
+                    has_gambling_content = filter_content_with_grep()
+                    
+                    # Tambahkan hasil deteksi ke file CSV
+                    writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
             else:
                 writer.writerow([url, status_code, "Skipped"])
         else:

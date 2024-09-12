@@ -58,7 +58,6 @@ with open(csv_file_path, mode='r') as file:
     next(reader)  # Melewati header jika ada
     for row in reader:
         # Menambahkan https:// di depan URL
-        urls.append(f"https://{row[0]}")
         urls.append(f"http://{row[0]}")
 
 print(urls)
