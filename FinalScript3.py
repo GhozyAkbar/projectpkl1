@@ -43,7 +43,7 @@ def filter_content_with_grep():
     return False  # Tidak ada kata kunci yang ditemukan
 
 # Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
-csv_file_path = "judel.csv"
+csv_file_path = "7ud0l.csv"
 
 urls = []
 with open(csv_file_path, mode='r') as file:
@@ -52,7 +52,7 @@ with open(csv_file_path, mode='r') as file:
     for row in reader:
         # Menambahkan http:// di depan URL
         urls.append(f"http://{row[0]}")
-
+        urls.append(f"https://{row[0]}")
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
 
@@ -68,7 +68,7 @@ with open(output_file_path, mode='w', newline='') as file:
                 download_website_content(url)
                 
                 # Memeriksa ukuran file
-                if os.path.getsize('temp.html') < 50000:  # Ukuran minimal file
+                if os.path.getsize('temp.html') < 8000:  # Ukuran minimal file
                     print(f"Skipping {url}: Page is empty or too small.")
                     os.remove('temp.html')  # Menghapus file jika terlalu kecil
                     writer.writerow([url, status_code, "Skipped (Page too small)"])

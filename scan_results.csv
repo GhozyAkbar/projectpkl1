@@ -1,6 +1,25 @@
 Domain,Status Code,Gambling Content
-https://example1.com,406
-https://example1.com,406,Skipped
-https://example2.com,403
-https://example2.com,403,Skipped
-https://example3.com,200
+http://slot-mahjong.pa-talu.go.id,200,Yes
+https://slot-mahjong.pa-talu.go.id,200,Yes
+http://slot-mania.pa-talu.go.id,200,Yes
+https://slot-mania.pa-talu.go.id,200,Yes
+http://link-slot-gacor.klungkungtourism.klungkungkab.go.id,200,Yes
+https://link-slot-gacor.klungkungtourism.klungkungkab.go.id,200,Yes
+http://slot-online.pa-talu.go.id,200,Yes
+https://slot-online.pa-talu.go.id,200,Yes
+http://slot-deposit.klungkungtourism.klungkungkab.go.id,200,Yes
+https://slot-deposit.klungkungtourism.klungkungkab.go.id,200,Yes
+http://slot-server-singapore.pn-tubei.go.id,403,Skipped
+http://slot-toto.pn-tubei.go.id,403,Skipped
+http://slot-depo-5k.pn-tubei.go.id,403,Skipped
+http://slot-hoki.pa-talu.go.id,200,Yes
+https://slot-hoki.pa-talu.go.id,200,Yes
+http://slot-receh.pn-tubei.go.id,403,Skipped
+http://slot-thailand.pemdes.tapselkab.go.id,200,Yes
+https://slot-thailand.pemdes.tapselkab.go.id,200,Yes
+http://slot-zeus.pa-sawahlunto.go.id,200,Yes
+https://slot-zeus.pa-sawahlunto.go.id,200,Yes
+http://slot-demo.pa-talu.go.id,200,Yes
+https://slot-demo.pa-talu.go.id,200,Yes
+http://slot-resmi.klungkungtourism.klungkungkab.go.id,200,Skipped (Page too small)
+https://slot-resmi.klungkungtourism.klungkungkab.go.id,200,Skipped (Page too small)
