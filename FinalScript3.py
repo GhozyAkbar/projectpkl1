@@ -3,22 +3,24 @@ import requests
 import subprocess
 import os  # Tambahan untuk mengakses fungsi os.path.getsize dan os.remove
 
-# Fungsi untuk mengecek response code suatu URL
+# Fungsi untuk mengecek response code suatu URL dan mengikuti redirect
 def check_url_status(url):
     try:
-        # Mengirim request GET ke URL
-        response = requests.get(url, timeout=10)  # Timeout untuk menghindari waktu tunggu terlalu lama
-        return response.status_code
+        # Mengirim request GET ke URL dan mengikuti pengalihan hingga 5 kali
+        response = requests.get(url, timeout=10, allow_redirects=True)
+        if response.history:  # Mengecek apakah ada pengalihan
+            print(f"{url} dialihkan ke {response.url}")
+        return response.status_code, response.url
     except requests.exceptions.RequestException as e:
         # Jika ada error saat mengakses URL, tampilkan error
         print(f"Error saat mengakses {url}: {e}")
-        return None
+        return None, None
 
-# Fungsi untuk mendownload konten dari website menggunakan wget
+# Fungsi untuk mendownload konten dari website menggunakan wget dengan User-Agent
 def download_website_content(url):
     try:
-        # Menggunakan wget untuk mendownload halaman web ke file temp.html
-        wget_command = ["wget", "-q", "-O", "temp.html", url]
+        # Menggunakan wget untuk mendownload halaman web ke file temp.html dengan header User-Agent
+        wget_command = ["wget", "-q", "-O", "temp.html", "--user-agent=Mozilla/5.0", url]
         subprocess.run(wget_command, check=True)
         print(f"Konten dari {url} berhasil diunduh.")
     except subprocess.CalledProcessError as e:
@@ -52,7 +54,7 @@ with open(csv_file_path, mode='r') as file:
     for row in reader:
         # Menambahkan http:// di depan URL
         urls.append(f"http://{row[0]}")
-        urls.append(f"https://{row[0]}")
+
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
 
@@ -62,14 +64,14 @@ with open(output_file_path, mode='w', newline='') as file:
     
     # Mengecek status code dari setiap URL dan menyimpan hasilnya
     for url in urls:
-        status_code = check_url_status(url)
+        status_code, final_url = check_url_status(url)
         if status_code:
             if status_code == 200:  # Jika status code 200, coba download konten dan cek
-                download_website_content(url)
+                download_website_content(final_url)
                 
                 # Memeriksa ukuran file
-                if os.path.getsize('temp.html') < 8000:  # Ukuran minimal file
-                    print(f"Skipping {url}: Page is empty or too small.")
+                if os.path.getsize('temp.html') < 10000:  # Ukuran minimal file
+                    print(f"Skipping {final_url}: Page is empty or too small.")
                     os.remove('temp.html')  # Menghapus file jika terlalu kecil
                     writer.writerow([url, status_code, "Skipped (Page too small)"])
                     continue  # Lanjut ke URL berikutnya
@@ -82,7 +84,7 @@ with open(output_file_path, mode='w', newline='') as file:
                 writer.writerow([url, status_code, "Skipped"])
         else:
             print(f"URL: {url} - Gagal mendapatkan status code.")
-
+    
         # Pastikan file temp.html dihapus setelah selesai digunakan
         if os.path.exists('temp.html'):
             os.remove('temp.html')
