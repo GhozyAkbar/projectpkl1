@@ -1,6 +1,7 @@
 import csv
 import subprocess
 import os
+import sys
 
 # Fungsi untuk mendownload konten dari website menggunakan wget dan mengecek status code
 def download_website_content(url):
@@ -79,15 +80,15 @@ def filter_content_with_grep():
     return False  # Tidak ada kata kunci yang ditemukan
 
 # Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
-csv_file_path = "7ud0l.csv"
+# csv_file_path = "7ud0l.csv"
+csv_file_path = sys.argv[1]
 
 urls = []
 with open(csv_file_path, mode='r') as file:
     reader = csv.reader(file, delimiter=';')  # Menentukan pemisah sebagai semicolon
     next(reader)  # Melewati header jika ada
     for row in reader:
-        # urls.append(f"http://{row[0]}")  # Menambahkan http:// di depan URL
-        urls.append(row[0])  # Menambahkan http:// di depan URL
+        urls.append(row[0])
 
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
@@ -101,12 +102,6 @@ with open(output_file_path, mode='w', newline='') as file:
         success, status_code = download_website_content(url)
         
         if success:  # Jika konten berhasil diunduh dan status code 200
-            # Memeriksa ukuran file
-            # if os.path.getsize('temp.html') < 10000:  # Ukuran minimal file
-            #     print(f"Skipping {url}: Page is empty or too small.")
-            #     os.remove('temp.html')  # Menghapus file jika terlalu kecil
-            #     writer.writerow([url, status_code, "Skipped (Page too small)"])
-            #     continue  # Lanjut ke URL berikutnya
 
             # Memfilter konten berdasarkan kata exclude dan kata kunci perjudian
             result = filter_content_with_grep()
