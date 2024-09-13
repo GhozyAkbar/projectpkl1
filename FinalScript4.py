@@ -12,6 +12,8 @@ def download_website_content(url):
             "--spider",  # Cek status tanpa mendownload konten
             "--server-response",  # Menampilkan header HTTP dari server
             "--max-redirect=20",  # Mengikuti hingga 20 pengalihan
+            "--timeout=5",
+            "--tries=1",
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0", 
             url
         ]
@@ -34,7 +36,9 @@ def download_website_content(url):
             "--quiet", 
             "--max-redirect=20", 
             "--content-on-error", 
-            "--output-document=temp.html", 
+            "--output-document=temp.html",
+            "--timeout=5",
+            "--tries=1", 
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0", 
             url
         ]
