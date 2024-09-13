@@ -44,22 +44,38 @@ def download_website_content(url):
         print(f"Gagal mengunduh konten dari {url}: {e}")
         return None, None
 
-# Fungsi untuk memfilter konten berdasarkan wordlist judi online
+# Fungsi untuk memfilter konten berdasarkan kata "exclude" dan kata kunci dari wordlist
 def filter_content_with_grep():
-    # Membuka file wordlist.txt
-    with open('wordlist.txt', 'r') as file:
-        gambling_keywords = [word.strip() for line in file for word in line.strip().split()]
+    # Membuka file exclude.txt
+    with open('exclude.txt', 'r') as exclude_file:
+        exclude_keywords = [word.strip() for line in exclude_file for word in line.strip().split()]
 
-    # Buat command grep untuk mencari kata kunci di file temp.html
+    # Mengecek apakah ada kata exclude dalam konten
+    for exclude_keyword in exclude_keywords:
+        try:
+            grep_exclude_command = ["grep", "-i", exclude_keyword, "temp.html"]
+            result = subprocess.run(grep_exclude_command, capture_output=True, text=True)
+            if result.stdout:
+                print(f"Kata exclude '{exclude_keyword}' ditemukan. Melewati URL ini.")
+                return "exclude"  # Jika kata exclude ditemukan, hentikan proses dan skip URL
+        except subprocess.CalledProcessError as e:
+            print(f"Error saat menjalankan grep untuk exclude keyword {exclude_keyword}: {e}")
+
+    # Membuka file wordlist.txt jika tidak ada kata exclude
+    with open('wordlist.txt', 'r') as wordlist_file:
+        gambling_keywords = [word.strip() for line in wordlist_file for word in line.strip().split()]
+
+    # Cek apakah ada kata kunci perjudian dalam konten
     for keyword in gambling_keywords:
         try:
             grep_command = ["grep", "-i", keyword, "temp.html"]
             result = subprocess.run(grep_command, capture_output=True, text=True)
             if result.stdout:
                 print(f"Ditemukan kata kunci '{keyword}' di dalam konten.")
-                return True  # Jika ditemukan salah satu kata kunci, langsung return True
+                return True  # Jika ditemukan salah satu kata kunci, return True
         except subprocess.CalledProcessError as e:
             print(f"Error saat menjalankan grep untuk keyword {keyword}: {e}")
+    
     return False  # Tidak ada kata kunci yang ditemukan
 
 # Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
@@ -70,7 +86,8 @@ with open(csv_file_path, mode='r') as file:
     reader = csv.reader(file, delimiter=';')  # Menentukan pemisah sebagai semicolon
     next(reader)  # Melewati header jika ada
     for row in reader:
-        urls.append(f"http://{row[0]}")  # Menambahkan http:// di depan URL
+        # urls.append(f"http://{row[0]}")  # Menambahkan http:// di depan URL
+        urls.append(row[0])  # Menambahkan http:// di depan URL
 
 # Menyimpan hasil ke dalam CSV baru
 output_file_path = "scan_results.csv"
@@ -85,17 +102,18 @@ with open(output_file_path, mode='w', newline='') as file:
         
         if success:  # Jika konten berhasil diunduh dan status code 200
             # Memeriksa ukuran file
-            if os.path.getsize('temp.html') < 10000:  # Ukuran minimal file
-                print(f"Skipping {url}: Page is empty or too small.")
-                os.remove('temp.html')  # Menghapus file jika terlalu kecil
-                writer.writerow([url, status_code, "Skipped (Page too small)"])
-                continue  # Lanjut ke URL berikutnya
+            # if os.path.getsize('temp.html') < 10000:  # Ukuran minimal file
+            #     print(f"Skipping {url}: Page is empty or too small.")
+            #     os.remove('temp.html')  # Menghapus file jika terlalu kecil
+            #     writer.writerow([url, status_code, "Skipped (Page too small)"])
+            #     continue  # Lanjut ke URL berikutnya
 
-            # Memfilter konten berdasarkan kata kunci judi
-            has_gambling_content = filter_content_with_grep()
-            
-            # Menambahkan hasil deteksi ke file CSV
-            writer.writerow([url, status_code, "Yes" if has_gambling_content else "No"])
+            # Memfilter konten berdasarkan kata exclude dan kata kunci perjudian
+            result = filter_content_with_grep()
+            if result == "exclude":
+                writer.writerow([url, status_code, "Skipped (Exclude Found)"])
+            else:
+                writer.writerow([url, status_code, "Yes" if result else "No"])
         else:
             writer.writerow([url, status_code, "Skipped"])
 
