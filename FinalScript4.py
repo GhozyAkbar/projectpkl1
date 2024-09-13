@@ -73,13 +73,12 @@ def filter_content_with_grep():
             result = subprocess.run(grep_command, capture_output=True, text=True)
             if result.stdout:
                 print(f"Ditemukan kata kunci '{keyword}' di dalam konten.")
-                return True  # Jika ditemukan salah satu kata kunci, return True
+                return True
         except subprocess.CalledProcessError as e:
             print(f"Error saat menjalankan grep untuk keyword {keyword}: {e}")
     
-    return False  # Tidak ada kata kunci yang ditemukan
+    return False
 
-# Baca URL dari file CSV yang dipisahkan dengan semicolon (;)
 # csv_file_path = "7ud0l.csv"
 csv_file_path = sys.argv[1]
 
