@@ -46,7 +46,7 @@ def download_website_content(url):
         return None, None
 
 def filter_content_with_grep():
-    with open('exclude.txt', 'r') as exclude_file:
+    with open('offjudol.txt', 'r') as exclude_file:
         exclude_keywords = [word.strip() for line in exclude_file for word in line.strip().split()]
 
     for exclude_keyword in exclude_keywords:
@@ -59,7 +59,7 @@ def filter_content_with_grep():
         except subprocess.CalledProcessError as e:
             print(f"Error saat menjalankan grep untuk exclude keyword {exclude_keyword}: {e}")
 
-    with open('wordlist.txt', 'r') as wordlist_file:
+    with open('onjudol.txt', 'r') as wordlist_file:
         gambling_keywords = [word.strip() for line in wordlist_file for word in line.strip().split()]
 
     for keyword in gambling_keywords:
