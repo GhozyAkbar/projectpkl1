@@ -10,13 +10,17 @@ def download_website_content(url):
             "--spider",  # Cek status tanpa mendownload konten
             "--server-response",  # Menampilkan header HTTP dari server
             "--max-redirect=20",  # Mengikuti hingga 20 pengalihan
-            "--timeout=5",  # timeout precess 5 seconds
-            "--tries=1",  # try connect 1 time 
+            "--timeout=5",  # timeout proses 5 detik
+            "--tries=1",  # mencoba koneksi 1 kali 
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0", 
             url
         ]
         result = subprocess.run(wget_check_command, capture_output=True, text=True)
         output = result.stderr
+
+        if "timed out" in output:
+            print(f"Skipping {url}: Timeout occurred")
+            return None, "timeout"
 
         status_code = None
         for line in output.splitlines():
@@ -31,7 +35,7 @@ def download_website_content(url):
             "wget", 
             "--quiet", 
             "--max-redirect=20", 
-            "--content-on-error", #  download content although error status code
+            "--content-on-error",  # download konten meskipun status error
             "--output-document=temp.html",
             "--timeout=5",
             "--tries=1", 
@@ -87,20 +91,22 @@ output_file_path = "scan_results.csv"
 
 with open(output_file_path, mode='w', newline='') as file:
     writer = csv.writer(file)
-    writer.writerow(["Domain" "Judol Content"])
+    writer.writerow(["Domain", "Judol Content"])
 
     for url in urls:
         success, status_code = download_website_content(url)
 
         if success:
-
             result = filter_content_with_grep()
             if result == "exclude":
                 writer.writerow([url, "Skipped (No Judol Content)"])
             else:
                 writer.writerow([url, "Yes" if result else "No"])
         else:
-            writer.writerow([url, "Skipped (Status Code Not 200)"])
+            if status_code == "timeout":
+                writer.writerow([url, "Skipped (Timeout)"])
+            else:
+                writer.writerow([url, f"Skipped (Status Code {status_code})"])
 
         if os.path.exists('temp.html'):
             os.remove('temp.html')

@@ -14,3 +14,7 @@ SuSpenDeD
 WeBmAsTeR
 sUsPenDed
 webMAster
+Apache
+APACHE
+Nginx
+NGINX
