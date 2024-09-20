@@ -87,7 +87,7 @@ output_file_path = "scan_results.csv"
 
 with open(output_file_path, mode='w', newline='') as file:
     writer = csv.writer(file)
-    writer.writerow(["Domain" "Judol Content"])
+    writer.writerow(["Domain", "Judol Content"])
 
     for url in urls:
         success, status_code = download_website_content(url)
